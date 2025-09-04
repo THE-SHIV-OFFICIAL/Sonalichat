@@ -86,7 +86,7 @@ async def on_new_chat_members(client: Client, message: Message):
                                 "ᴧᴅᴅ ϻє ʙᴧʙʏ",
                                 url=f"https://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages+manage_video_chats+pin_messages+invite_users"
                             ),
-                            InlineKeyboardButton("ᴊσɪη sᴜᴘᴘσʀᴛ", url="https://t.me/purvi_support")
+                            InlineKeyboardButton("ᴊσɪη sᴜᴘᴘσʀᴛ", url="https://t.me/+Ius6mdxOqpFjNWM9")
                         ]
                     ])
                 )
