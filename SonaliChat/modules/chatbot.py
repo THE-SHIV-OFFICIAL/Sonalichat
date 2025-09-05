@@ -9,7 +9,7 @@ import requests
 import random
 import unicodedata
 
-from SonaliChat import detect
+from langdetect import detect
 
 from SonaliChat import app as bot
 
