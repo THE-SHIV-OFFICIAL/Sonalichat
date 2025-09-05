@@ -1,4 +1,3 @@
-
 from pyrogram import Client, filters, enums
 from pyrogram.enums import ChatAction
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -11,7 +10,7 @@ import unicodedata
 
 from langdetect import detect
 
-from SonaliChat import app as bot
+from SHUKLAMUSIC import app  # or wherever your string session is initialized
 
 # ✅ MongoDB Connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://teamdaxx123:teamdaxx123@cluster0.ysbpgcp.mongodb.net/?retryWrites=true&w=majority")
@@ -20,7 +19,7 @@ status_db = mongo_client["ChatbotStatus"]["status"]
 chatai_db = mongo_client["Word"]["WordDb"]
 
 # ✅ API Configuration
-API_KEY = "abacf43bf0ef13f467283e5bc03c2e1f29dae4228e8c612d785ad428b32db6ce"
+API_KEY = "6d4dd589630fc5b728603b30903630f774946be0fb1eaa338121af61a65ad10b"
 BASE_URL = "https://api.together.xyz/v1/chat/completions"
 
 # ✅ Helper Function: Check If User Is Admin
@@ -223,7 +222,7 @@ custom_responses = {
     "tumhe kaun pasand hai": "Mujhe? Woh ek ladka hai... jo mujhe ye puch raha hai! 😜",
 
      # 🔥 Girl Chatbot Custom Responses
-    "hello": "Heyy! Mai Hinata hoon~ Aap mujhe yaad kar rahe the? 💕",
+    "hello": "Heyy!~ Aap mujhe yaad kar rahe the? 💕",
     "hii": "Hii, kaise ho aap? Mera din ab accha ho gaya! 😊",
     "hey": "Hey cutie! Aap mujhe yaad aaye? 😘",
     "radhe radhe": "radhe radhe jai shree ram 🚩! Aap kaise ho? 🤗",
@@ -247,7 +246,7 @@ CHATBOT_ON = [
 ]
 
 # ✅ /chatbot Command with Buttons
-@bot.on_message(filters.command("chatbot") & filters.group)
+@app.on_message(filters.command("chatbot") & filters.group)
 async def chatbot_control(client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -263,7 +262,7 @@ async def chatbot_control(client, message: Message):
     )
 
 # ✅ Callback for Enable/Disable Buttons
-@bot.on_callback_query(filters.regex(r"enable_chatbot|disable_chatbot"))
+@app.on_callback_query(filters.regex(r"enable_chatbot|disable_chatbot"))
 async def chatbot_callback(client, query: CallbackQuery):
     chat_id = query.message.chat.id
     user_id = query.from_user.id
@@ -285,35 +284,36 @@ async def chatbot_callback(client, query: CallbackQuery):
         await query.edit_message_text(f"**✦ ᴄʜᴀᴛʙᴏᴛ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ ɪɴ {query.message.chat.title}.**")
 
 # ✅ Main Chatbot Handler (Text & Stickers)
-@bot.on_message(filters.text | filters.sticker)
+@app.on_message(filters.text | filters.sticker)
 async def chatbot_reply(client, message: Message):
     chat_id = message.chat.id
     text = message.text.strip() if message.text else ""
-    bot_username = (await bot.get_me()).username.lower()
+    bot_username = (await client.get_me()).username.lower()
 
-    # First, check if the chatbot is enabled for the current chat
+    # Check if chatbot is enabled in DB
     chat_status = await status_db.find_one({"chat_id": chat_id})
     if chat_status and chat_status.get("status") == "disabled":
-        return  # If chatbot is disabled, do not reply to any messages
+        return
 
-    # Typing indicator
-    await bot.send_chat_action(chat_id, ChatAction.TYPING)
+    # Typing...
+    await client.send_chat_action(chat_id, ChatAction.TYPING)
 
-    # Check if bad words exist in the message
+    # ✅ Bad word filtering (fixed)
     if re.search(bad_word_regex, text):
         await message.delete()
-        await message.reply_text("ᴘʟᴇᴀsᴇ : ᴅᴏɴ'ᴛ sᴇɴᴅ ʙᴀᴅ ᴡᴏʀᴅ ᴛʏᴘᴇ ᴍᴇssᴀɢᴇs ᴀᴘɴᴀ ʙᴇʜᴀᴠɪᴏʀ ᴄʜᴀɴɢᴇ ᴋᴀʀᴇ ᴘʟᴇsᴀsᴇ 🙂.")
+        
+        user_mention = message.from_user.mention if message.from_user else "User"
+        
+        await message.reply_text(f"⚠️ {user_mention}, please avoid using bad words.")
         return
 
-    # If it's a group message
+    # 🔹 Group handling
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        # Check custom responses
         for key in custom_responses:
             if key in text.lower():
                 await message.reply_text(custom_responses[key])
                 return
 
-        # Fetch response from MongoDB
         K = []
         if message.sticker:
             async for x in chatai_db.find({"word": message.sticker.file_unique_id}):
@@ -330,29 +330,30 @@ async def chatbot_reply(client, message: Message):
             else:
                 await message.reply_text(response)
             return
-
-    # If it's a mention or bot's username, use the API
+            
+    # 🔹 AI Fallback if bot is mentioned
     if f"@{bot_username}" in text.lower() or bot_username in text.lower():
         headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
-        payload = {"model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo", "messages": [{"role": "user", "content": text}]}
+        payload = {
+            "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+            "messages": [{"role": "user", "content": text}]
+        }
 
         response = requests.post(BASE_URL, json=payload, headers=headers)
         if response.status_code == 200:
-            result = response.json().get("choices", [{}])[0].get("message", {}).get("content", "❍ ᴇʀʀᴏʀ: API response missing!")
+            result = response.json().get("choices", [{}])[0].get("message", {}).get("content", "⚠️ Empty response.")
             await message.reply_text(result)
         else:
-            await message.reply_text(f"❍ ᴇʀʀᴏʀ: API failed. Status: {response.status_code}")
+            await message.reply_text(f"❌ API failed. Status: {response.status_code}")
         return
 
-    # Handle private chat messages (same logic as for groups, but for private)
+    # 🔹 Private Chat
     elif message.chat.type == enums.ChatType.PRIVATE:
-        # Check custom responses
         for key in custom_responses:
             if key in text.lower():
                 await message.reply_text(custom_responses[key])
                 return
 
-        # Fetch response from MongoDB
         K = []
         if message.sticker:
             async for x in chatai_db.find({"word": message.sticker.file_unique_id}):
@@ -370,13 +371,16 @@ async def chatbot_reply(client, message: Message):
                 await message.reply_text(response)
             return
 
-        # Fallback to API if no responses found
+        # API fallback
         headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
-        payload = {"model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo", "messages": [{"role": "user", "content": text}]}
+        payload = {
+            "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+            "messages": [{"role": "user", "content": text}]
+        }
 
         response = requests.post(BASE_URL, json=payload, headers=headers)
         if response.status_code == 200:
-            result = response.json().get("choices", [{}])[0].get("message", {}).get("content", "❍ ᴇʀʀᴏʀ: API response missing!")
+            result = response.json().get("choices", [{}])[0].get("message", {}).get("content", "⚠️ No response.")
             await message.reply_text(result)
         else:
-            await message.reply_text(f"❍ ᴇʀʀᴏʀ: API failed. Status: {response.status_code}")
+            await message.reply_text(f"❌ API failed. Status: {response.status_code}")
