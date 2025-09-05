@@ -20,5 +20,5 @@ class ChatGptEs:
         except Exception as e:
             return f"❖ I got an error: {str(e)}"
 
-API_KEY = "AIzaSyD9wgrroQ6ERERUOxapT97W3q1gy-nBJ4c"
+API_KEY = "AIzaSyDFM-OzXtqz7bk9GEd9FfOiC0IAPYvo4h8"
 chatbot_api = ChatGptEs(api_key=API_KEY)
