@@ -7,6 +7,7 @@ import re
 import requests
 import random
 import unicodedata
+from pyrogram.enums import ChatType
 
 
 from SonaliChat import app  # or wherever your string session is initialized
@@ -220,9 +221,7 @@ async def chatbot_callback(client, query: CallbackQuery):
         await query.answer("🚫 ᴄʜᴀᴛʙᴏᴛ ᴅɪsᴀʙʟᴇᴅ !!", show_alert=True)
         await query.edit_message_text(f"**✦ ᴄʜᴀᴛʙᴏᴛ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ ɪɴ {query.message.chat.title}.**")
 
-# ✅ Main Chatbot Handler (Text & Stickers)
-# ✅ Main Chatbot Handler (Text & Stickers)
-@app.on_message(filters.text | filters.sticker)
+@app.on_message((filters.text | filters.sticker) & filters.group)
 async def chatbot_reply(client, message: Message):
     chat_id = message.chat.id
     text = message.text.strip().lower() if message.text else ""
@@ -262,11 +261,11 @@ async def chatbot_reply(client, message: Message):
 
     # ----------------- Priority 3: AI Fallback -----------------
     # Group → only reply if bot is mentioned
-    if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+    if message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         if f"@{bot_username}" not in text:
             return  
 
-    # Private → always AI fallback
+    # ❌ Private → अब बिल्कुल ignore होगा (क्योंकि ऊपर filter में group लगाया है)
     headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
     payload = {
         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
