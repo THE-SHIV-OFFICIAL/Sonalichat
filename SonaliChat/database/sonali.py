@@ -1,6 +1,4 @@
-# 1. New import statements
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 
 class ChatGptEs:
     SYSTEM_PROMPT = (
@@ -11,30 +9,35 @@ class ChatGptEs:
     )
 
     def __init__(self, api_key: str):
-        # 2. New way to initialize the client
-        self.client = genai.Client(api_key=api_key)
+        # Configure the Gemini API
+        genai.configure(api_key=api_key)
+        
+        # Use a valid model name (gemini-1.5-pro or gemini-1.5-flash)
+        self.model = genai.GenerativeModel(
+            model_name="gemini-1.5-pro",
+            system_instruction=self.SYSTEM_PROMPT # New way to set system prompts in Gemini 1.5
+        )
 
     def ask_question(self, message: str) -> str:
         try:
-            # 3. New syntax for generating content and passing system instructions
-            response = self.client.models.generate_content(
-                model='gemini-1.5-pro',
-                contents=message,
-                config=types.GenerateContentConfig(
-                    system_instruction=self.SYSTEM_PROMPT,
-                ),
-            )
+            # Generate response
+            response = self.model.generate_content(message)
             return response.text.strip()
         except Exception as e:
             return f"❖ I got an error: {str(e)}"
 
-# ----------------------------------
-# Test the Bot
-# ----------------------------------
+# 1. API Key Setup
+# USE ONLY ONE API KEY. The one starting with "AIzaSy..." is for Google Gemini.
+# The one starting with "sk-proj..." is for OpenAI (ChatGPT) and will NOT work here.
+GEMINI_API_KEY = "AIzaSyAriHVdfaCWMQCzrdQtFv1VZmJUUQrBDVg" 
+
+# 2. Initialize the Chatbot
+chatbot_api = ChatGptEs(api_key=GEMINI_API_KEY)
+
+# 3. Test the Bot
 if __name__ == "__main__":
-    GEMINI_API_KEY = "AIzaSyAriHVdfaCWMQCzrdQtFv1VZmJUUQrBDVg" # Put your "AIzaSy..." key here
+    user_input = "Hi Mahi, kaisi ho tum?"
+    print(f"User: {user_input}")
     
-    chatbot_api = ChatGptEs(api_key=GEMINI_API_KEY)
-    
-    bot_reply = chatbot_api.ask_question("Hi Mahi, kaisi ho tum?")
+    bot_reply = chatbot_api.ask_question(user_input)
     print(f"Mahi: {bot_reply}")
