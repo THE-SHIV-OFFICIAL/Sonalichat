@@ -127,7 +127,7 @@ async def on_left_chat_member(client: Client, message: Message):
             photo=random.choice(IMG),
             caption=left_msg,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("sᴇᴇ ɢʀᴏᴜᴘ", url=f"https://t.me/{message.chat.username}" if message.chat.username else "https://t.me/betabot_hub"
+                [InlineKeyboardButton("sᴇᴇ ɢʀᴏᴜᴘ", url=f"https://t.me/{message.chat.username}" if message.chat.username else "https://t.me/betabot_hub")]
             ])
         )
 
