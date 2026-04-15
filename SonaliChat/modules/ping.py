@@ -16,7 +16,7 @@ start_time = datetime.now()
 @app.on_message(filters.command("ping"))
 async def ping(client, message: Message):
     start = datetime.now()
-    t = "**ᴘɪηɢɪηɢ..😱**"
+    t = "**LOADING BABY..😱**"
     txxt = await message.reply(t)
     await asyncio.sleep(0.25)
     await txxt.edit_text("**ᴘɪηɢɪηɢ...❤️‍🔥**")
@@ -29,6 +29,6 @@ async def ping(client, message: Message):
     minutes, seconds = divmod(remainder, 60)
     await message.reply_photo(
         photo=random.choice(IMG),
-        caption=f"**ʜєʏ ʙᴧʙʏ !!**\n**[{BOT_NAME}](t.me/{BOT_USERNAME}) ɪꜱ ᴧʟɪᴠє 🥀 ᴧηᴅ ᴡσʀᴋɪηɢ ꜰɪηє ᴡɪᴛʜ**\n\n**➥ ᴘσηɢ :** `{ms}` ms\n**➥ ᴜᴘᴛɪϻє :** `{hours}`ʜ:`{minutes}`ᴍ:`{seconds}`s\n\n**✦ 𝐏σᴡєʀєᴅ вʏ » [ᴀʟᴘʜᴀ-ʙᴀʙʏ](t.me/ll_ALPHA_BABY_lll)**",
+        caption=f"**ʜєʏ ʙᴧʙʏ !!**\n**[{BOT_NAME}](t.me/{BOT_USERNAME}) ɪꜱ ᴧʟɪᴠє 🥀 ᴧηᴅ ᴡσʀᴋɪηɢ ꜰɪηє ᴡɪᴛʜ**\n\n**➥ ᴘσηɢ :** `{ms}` ms\n**➥ ᴜᴘᴛɪϻє :** `{hours}`ʜ:`{minutes}`ᴍ:`{seconds}`s\n\n**✦ 𝐏σᴡєʀєᴅ вʏ » [THE SHIV](t.me/betabot_hub)**",
         reply_markup=InlineKeyboardMarkup(PNG_BTN),
     )
