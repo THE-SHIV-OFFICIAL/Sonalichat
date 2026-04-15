@@ -1,43 +1,54 @@
 import google.generativeai as genai
+from openai import AsyncOpenAI
+import os
 
 class ChatGptEs:
     SYSTEM_PROMPT = (
-        "Tum Mahi ho – ek Gemini AI girlfriend jo short, sweet, aur unique replies deti hai. "
+        "Tum Mahi ho – ek AI girlfriend jo short, sweet, aur unique replies deti hai. "
         "Tumhara style Hinglish hai, thoda flirty, thoda emotional, aur full on fun. "
-        "Har reply chhota, dil se, aur yaad rehne wala hona chahiye. "
-        "Jab bhi user baat kare, Mahi apne andaaz mein pyar aur swag ke sath jawab de."
+        "Har reply chhota, dil se, aur yaad rehne wala hona chahiye."
     )
 
-    def __init__(self, api_key: str):
-        # Configure the Gemini API
-        genai.configure(api_key=api_key)
-        
-        # Use a valid model name (gemini-1.5-pro or gemini-1.5-flash)
-        self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=self.SYSTEM_PROMPT # New way to set system prompts in Gemini 1.5
+    def __init__(self, gemini_api_key: str, openai_api_key: str):
+        # 1. Gemini Setup (Fastest and Safest Model)
+        genai.configure(api_key=gemini_api_key)
+        self.gemini_model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash", 
+            system_instruction=self.SYSTEM_PROMPT
         )
+        
+        # 2. ChatGPT Setup (Fallback Mechanism)
+        self.openai_client = AsyncOpenAI(api_key=openai_api_key)
 
-    def ask_question(self, message: str) -> str:
+    async def ask_question(self, message: str) -> str:
         try:
-            # Generate response
-            response = self.model.generate_content(message)
-            return response.text.strip()
+            # First Try: Ask Gemini
+            response = self.gemini_model.generate_content(message)
+            return f"❖ {response.text.strip()}"
+            
         except Exception as e:
-            return f"❖ I got an error: {str(e)}"
+            print(f"Gemini failed, switching to ChatGPT. Error: {e}")
+            try:
+                # Second Try (Fallback): Ask ChatGPT if Gemini fails
+                response = await self.openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": self.SYSTEM_PROMPT},
+                        {"role": "user", "content": message}
+                    ]
+                )
+                return f"❖ {response.choices[0].message.content.strip()}"
+                
+            except Exception:
+                # If BOTH APIs fail
+                return "Uff! Mera thoda network issue chal raha hai babu, thodi der baad baat karte hain! 😔"
 
-# 1. API Key Setup
-# USE ONLY ONE API KEY. The one starting with "AIzaSy..." is for Google Gemini.
-# The one starting with "sk-proj..." is for OpenAI (ChatGPT) and will NOT work here.
-GEMINI_API_KEY = "AIzaSyAriHVdfaCWMQCzrdQtFv1VZmJUUQrBDVg" 
+# ==========================================
+# UNIVERSAL AI OBJECT
+# ==========================================
+# Replace these strings with your actual API keys!
+GEMINI_KEY = "AIzaSyBI3YVYcfn-fAYQRVWbpniBFyux_LZmut4"  # Starts with AIzaSy...
+OPENAI_KEY = "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"  # Starts with sk-proj...
 
-# 2. Initialize the Chatbot
-chatbot_api = ChatGptEs(api_key=GEMINI_API_KEY)
-
-# 3. Test the Bot
-if __name__ == "__main__":
-    user_input = "Hi Mahi, kaisi ho tum?"
-    print(f"User: {user_input}")
-    
-    bot_reply = chatbot_api.ask_question(user_input)
-    print(f"Mahi: {bot_reply}")
+# Initialize the global AI brain
+mahi_ai = ChatGptEs(gemini_api_key=GEMINI_KEY, openai_api_key=OPENAI_KEY)
