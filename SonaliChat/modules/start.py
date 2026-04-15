@@ -40,7 +40,7 @@ async def start(client, m: Message):
         await client.send_message(LOGGER_GROUP_ID, log_msg)
 
 
-        accha = await m.reply_text(text="**ꜱᴛᴧʀᴛɪηɢ....🥀**")
+        accha = await m.reply_text(text="**Loading....🥀**")
         await asyncio.sleep(1)
         await accha.edit("**ᴘɪηɢ ᴘσηɢ...🍫**")
         await asyncio.sleep(0.5)
@@ -81,7 +81,7 @@ async def on_new_chat_members(client: Client, message: Message):
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton("ᴧᴅᴅ ϻє ʙᴧʙʏ", url=f"https://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages+manage_video_chats+pin_messages+invite_users"),
-                    InlineKeyboardButton("ᴊσɪη sᴜᴘᴘσʀᴛ", url="https://t.me/iamvillain77")
+                    InlineKeyboardButton("ᴊσɪη sᴜᴘᴘσʀᴛ", url="https://t.me/betabot_support")
                 ]
             ])
         )
@@ -101,7 +101,7 @@ async def on_new_chat_members(client: Client, message: Message):
             photo=random.choice(IMG),
             caption=log_msg,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("ɢʀᴏᴜᴘ ʟɪɴᴋ", url=invite_link if invite_link != "Not Available" else "https://t.me/iamvillain77")]
+                [InlineKeyboardButton("ɢʀᴏᴜᴘ ʟɪɴᴋ", url=invite_link if invite_link != "Not Available" else "https://t.me/betabot_hub")]
             ])
         )
         
@@ -127,7 +127,7 @@ async def on_left_chat_member(client: Client, message: Message):
             photo=random.choice(IMG),
             caption=left_msg,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("sᴇᴇ ɢʀᴏᴜᴘ", url=f"https://t.me/{message.chat.username}" if message.chat.username else "https://t.me/iamvillain77")]
+                [InlineKeyboardButton("sᴇᴇ ɢʀᴏᴜᴘ", url=f"https://t.me/{message.chat.username}" if message.chat.username else "https://t.me/betabot_hub"
             ])
         )
 
@@ -141,7 +141,7 @@ async def help_command(client, message):
         reply_markup=InlineKeyboardMarkup([
             [
                 InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ʙᴀʙʏ", url=f"https://t.me/{client.me.username}?startgroup=s&admin=delete_messages+manage_video_chats+pin_messages+invite_users"),
-                InlineKeyboardButton("ᴊᴏɪɴ sᴜᴘᴘᴏʀᴛ", url="https://t.me/purvibots")
+                InlineKeyboardButton("ᴊᴏɪɴ sᴜᴘᴘᴏʀᴛ", url="https://t.me/betabot_hub")
             ]
         ])
     )
@@ -155,7 +155,7 @@ async def help_button(client, callback_query):
     keyboard = InlineKeyboardMarkup([
         [
             InlineKeyboardButton("ʙᴀᴄᴋ ᴛᴏ ʜᴏᴍᴇ", callback_data="back"),
-            InlineKeyboardButton("ᴊᴏɪɴ sᴜᴘᴘᴏʀᴛ", url="https://t.me/purvibots")
+            InlineKeyboardButton("ᴊᴏɪɴ sᴜᴘᴘᴏʀᴛ", url="https://t.me/betabot_support")
         ]
     ])
     await callback_query.answer()
