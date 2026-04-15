@@ -9,7 +9,7 @@ async def get_fsub(bot, message):
         await bot.get_chat_member(target_channel_id, user_id)
     except UserNotParticipant:
         channel_link = (await bot.get_chat(target_channel_id)).invite_link
-        join_button = InlineKeyboardButton("ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=channel_link)
+        join_button = InlineKeyboardButton("ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url="https://t.me/betabot_hub")
 
         keyboard = [[join_button]]
         await message.reply(
