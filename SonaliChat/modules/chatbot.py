@@ -1,4 +1,4 @@
-from SonaliChat.database.sonali import mahi_ai
+from SonaliChat.database.sonali import chatbot_api
 from pyrogram import filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
 from pyrogram.enums import ChatAction, ChatMemberStatus
