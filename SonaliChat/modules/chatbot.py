@@ -39,14 +39,14 @@ async def chatbot(_, message: Message):
 
     await app.send_chat_action(chat_id, ChatAction.TYPING)
     reply = chatbot_api.ask_question(message.text)
-    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @iamvillain77.")
+    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @betabot_support.")
 
 # PRIVATE CHATBOT HANDLER
 @app.on_message(filters.private & filters.text & ~filters.bot & ~filters.regex(r"^[/!]"))
 async def chatbot_pm(_, message: Message):
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     reply = chatbot_api.ask_question(message.text)
-    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @iamvillain77.")
+    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ betabot_support.")
 
 # /chatbot COMMAND WITH BUTTONS
 @app.on_message(filters.command("chatbot") & filters.group & ~filters.bot)
