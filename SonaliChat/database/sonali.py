@@ -50,5 +50,5 @@ class ChatGptEs:
 GEMINI_KEY = "AIzaSyBI3YVYcfn-fAYQRVWbpniBFyux_LZmut4"  # Starts with AIzaSy...
 OPENAI_KEY = "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"  # Starts with sk-proj...
 
-# Initialize the global AI brain
-mahi_ai = ChatGptEs(gemini_api_key=GEMINI_KEY, openai_api_key=OPENAI_KEY)
+# Initialize the global AI brain (Name changed to match your modules)
+chatbot_api = ChatGptEs(gemini_api_key=GEMINI_KEY, openai_api_key=OPENAI_KEY)
