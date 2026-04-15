@@ -14,7 +14,7 @@ class ChatGptEs:
         
         # Use a valid model name (gemini-1.5-pro or gemini-1.5-flash)
         self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
+            model_name="gemini-1.5-flash",
             system_instruction=self.SYSTEM_PROMPT # New way to set system prompts in Gemini 1.5
         )
 
