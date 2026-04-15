@@ -12,12 +12,12 @@ MONGO_URL = getenv("MONGO_URL", None)
 AUTH_CHANNEL = (getenv("AUTH_CHANNEL", None))
 FSUB = getenv("FSUB", False)
 OWNER_ID = int(getenv("OWNER_ID", None))
-OWNER = 8417541498
-LOGGER_GROUP_ID = -1002584168578
-BOT_NAME = os.environ.get("BOT_NAME","ᴋʀɪᴛɪ ᴄʜᴀᴛ")
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "Kriti_chat_bot")
-SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "lll_BADNAM_BABY_lll")
-UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", "lll_BADNAM_BABY_lll")
+OWNER = 8418584090
+LOGGER_GROUP_ID = -1003812209413
+BOT_NAME = os.environ.get("BOT_NAME","RED WINE")
+BOT_USERNAME = os.environ.get("BOT_USERNAME", "red_wine_robot")
+SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "betabot_support")
+UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", "betabot_hub")
 
 STICKER = [
 "CAACAgUAAxkBAAKV2Ge_HEejUGb8foZZ9eunAivt46rNAAL9EQAC-EXwV3yNmpSjijuwHgQ",
