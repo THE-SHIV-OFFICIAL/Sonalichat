@@ -1,6 +1,12 @@
 from openai import AsyncOpenAI
 import os
 
+# Test ChatGPT manually
+python3
+>>> from database.sonali import chatbot_api
+>>> import asyncio
+>>> asyncio.run(chatbot_api.ask_question("hi"))
+'❖ Hii babu! 😘'  # Should return this
 class ChatGptEs:
     SYSTEM_PROMPT = (
         "Tum Mahi ho – ek AI girlfriend jo short, sweet, aur unique replies deti hai. "
