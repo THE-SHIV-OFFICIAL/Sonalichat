@@ -9,8 +9,8 @@ API_HASH = getenv("API_HASH", None)
 BOT_TOKEN = getenv("BOT_TOKEN", None)
 OWNER_ID = int(getenv("OWNER_ID", None))
 MONGO_URL = getenv("MONGO_URL", None)
-AUTH_CHANNEL = (getenv("AUTH_CHANNEL", None))
-FSUB = getenv("FSUB", False)
+AUTH_CHANNEL = (getenv("AUTH_CHANNEL", "-1003794153476"))
+FSUB = os.getenv("FSUB", "False").lower() == "true"  # True/False
 OWNER_ID = int(getenv("OWNER_ID", None))
 OWNER = 8418584090
 LOGGER_GROUP_ID = -1003812209413
