@@ -8,5 +8,5 @@ tgcrypto==1.2.2
 asyncio
 python-dotenv
 langdetect
-google-generativeai
-openai
+openai==1.12.0
+aiohttp==3.9.1
