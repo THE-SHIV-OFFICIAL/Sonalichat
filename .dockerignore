@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.git
+.gitignore
+README.md
+node_modules
+Dockerfile*
+docker-compose*
+.railway
+.nyc_output
+coverage.xml
+htmlcov
+.coverage
