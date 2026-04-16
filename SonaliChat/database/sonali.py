@@ -30,8 +30,6 @@ class ChatGptEs:
         except Exception:
             return "Uff! Network issue babu, thodi der baad try karo! 😔"
 
-OPENAI_API_KEY = "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"
-
 # Initialize
 from config import OPENAI_API_KEY
 chatbot_api = ChatGptEs(openai_api_key=OPENAI_API_KEY)
