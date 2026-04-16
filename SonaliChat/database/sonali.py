@@ -33,3 +33,36 @@ class ChatGptEs:
 # Initialize
 from config import OPENAI_API_KEY
 chatbot_api = ChatGptEs(openai_api_key=OPENAI_API_KEY)
+
+async def ask_question(self, message: str) -> str:
+    try:
+        response = await self.openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": self.SYSTEM_PROMPT},
+                {"role": "user", "content": message[:1000]}  # Limit input
+            ],
+            max_tokens=100,  # Reduced tokens
+            temperature=0.7
+        )
+        
+        # ✅ CRITICAL FIXES
+        reply = response.choices[0].message.content.strip()
+        
+        # Check empty response
+        if not reply or len(reply.strip()) == 0:
+            return "Aww babu, thoda soch rahi hu! 😘"
+        
+        # Remove invalid chars
+        reply = reply.encode('utf-8', errors='ignore').decode('utf-8')
+        reply = reply.replace('\n\n', '\n').strip()
+        
+        # Telegram safe length
+        if len(reply) > 4000:
+            reply = reply[:4000] + "... 💕"
+            
+        return f"❖ {reply}"
+        
+    except Exception as e:
+        print(f"ChatGPT Error: {e}")
+        return "Kya hua babu? Network slow hai! Thoda wait karo 😔"
