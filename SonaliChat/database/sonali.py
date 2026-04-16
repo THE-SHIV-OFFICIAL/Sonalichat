@@ -1,67 +1,59 @@
-import google.generativeai as genai
-import os
+import ollama
 import random
 import asyncio
+from typing import Optional
 
-class GeminiEs:
+class OllamaEs:
     SYSTEM_PROMPT = (
-        "Tum Mahi ho – ek AI girlfriend jo short, sweet, aur unique replies deti hai. "
-        "Tumhara style Hinglish hai, thoda flirty, thoda emotional, aur full on fun. "
-        "Har reply chhota, dil se, aur yaad rehne wala hona chahiye."
+        "Tum Mahi ho – ek AI girlfriend jo short, sweet, Hinglish replies deti hai. "
+        "Thoda flirty, emotional, fun. Har reply 1-2 sentences me."
     )
 
-    def __init__(self, google_api_key: str):
-        self.api_key = google_api_key
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(
-            'gemini-pro',
-            generation_config={
-                "max_output_tokens": 100,
-                "temperature": 0.8
-            },
-            system_instruction=self.SYSTEM_PROMPT
-        )
-        print("✅ Gemini Connected Successfully!")
-
+    def __init__(self):
+        self.model = "llama3.2"  # Local model name
+        
     async def ask_question(self, message: str) -> str:
         try:
-            clean_msg = (message or "").strip()[:1000]
+            clean_msg = message.strip()[:500]
             if not clean_msg:
                 return "Kya bolna hai babu? 😘"
             
-            # Gemini chat session maintain karne ke liye
+            # Ollama chat (FREE - No API key!)
             response = await asyncio.to_thread(
-                self.model.generate_content,
-                clean_msg
+                ollama.chat,
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": clean_msg}
+                ],
+                options={
+                    "temperature": 0.8,
+                    "num_predict": 100
+                }
             )
             
-            reply = response.text.strip()
+            reply = response['message']['content'].strip()
             
-            # Same validation logic
-            if not reply or len(reply) < 2:
-                return "Hmmm soch rahi hu babu! 💭"
+            # Clean & limit
+            if len(reply) > 2000:
+                reply = reply[:2000] + " 💕"
             
-            reply = reply.encode('utf-8', errors='ignore').decode('utf-8')
-            reply = reply.replace('\n\n\n', '\n').strip()
-            
-            if len(reply) > 3800:
-                reply = reply[:3800] + "... 💕"
-            
-            return f"❖ {reply}"
+            return f"❖ {reply}" if reply else "Hmmm soch rahi hu! 💭"
             
         except Exception as e:
-            print(f"Gemini Error: {e}")
+            print(f"Ollama Error: {e}")
             fallbacks = [
                 "Uff network slow hai babu! 😔",
                 "Thoda wait karo darling 💕", 
-                "Abhi busy hu, baad me baat! 😘"
+                "Abhi busy hu! 😘"
+                "1 bar papa sa bat kro @betabot_support"
             ]
             return random.choice(fallbacks)
 
-# Initialize
+# Global instance
 try:
-    from config import GOOGLE_API_KEY  # Config file me name change karo
-    chatbot_api = GeminiEs(google_api_key=GOOGLE_API_KEY)
+    chatbot_api = OllamaEs()
+    print("✅ Ollama Connected! (FREE LOCAL AI)")
 except Exception as e:
-    print(f"❌ Gemini Init Error: {e}")
+    print(f"❌ Ollama Error: {e}")
     chatbot_api = None
