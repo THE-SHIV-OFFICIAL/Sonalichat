@@ -1,21 +1,8 @@
 from collections import defaultdict
 import time
-
-user_cooldown = defaultdict(float)
-
-async def chat_handler(client, message):
-    user_id = message.from_user.id
-    now = time.time()
-    
-    if now - user_cooldown[user_id] < 2:  # 2 sec cooldown
-        return await message.reply("Thoda wait babu! 😊")
-    
-    user_cooldown[user_id] = now
-    # ... rest code
-from SonaliChat.database.sonali import chatbot_api
 from pyrogram import filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
-from pyrogram.enums import ChatAction, ChatMemberStatus
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.enums import ChatAction
 from SonaliChat import app
 from SonaliChat.database import (
     is_chatbot_enabled,
@@ -25,7 +12,10 @@ from SonaliChat.database import (
     is_admins
 )
 
-# GROUP CHAT FILTER
+# --- COOLDOWN SETUP ---
+user_cooldown = defaultdict(float)
+
+# --- GROUP CHAT FILTER ---
 async def text_filter(_, __, m: Message):
     return (
         bool(m.text)
@@ -37,7 +27,29 @@ async def text_filter(_, __, m: Message):
 
 chatbot_filter = filters.create(text_filter)
 
-# GROUP CHATBOT HANDLER
+# --- CORE AI LOGIC (Helper function to prevent code repetition) ---
+async def get_ai_response(text: str) -> str:
+    try:
+        # ✅ Await added here
+        reply = await chatbot_api.ask_question(text)
+        
+        # ✅ Empty message check
+        if not reply or len(reply.strip()) == 0:
+            return "Hii babu! Kya baat karni hai? 💕"
+        
+        # Clean text
+        reply = reply.strip().encode('utf-8', errors='ignore').decode()
+        
+        # Safe length check for Telegram limits
+        if len(reply) > 4000:
+            reply = reply[:4000] + "..."
+            
+        return reply
+    except Exception as e:
+        print(f"Chatbot Error: {e}")
+        return "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @BetaBot_support."
+
+# --- GROUP CHATBOT HANDLER ---
 @app.on_message(
     (
         filters.text & filters.group & chatbot_filter
@@ -46,48 +58,43 @@ chatbot_filter = filters.create(text_filter)
     & ~filters.bot
     & ~filters.sticker
 )
-async def chatbot(_, message: Message):
+async def group_chatbot(_, message: Message):
     chat_id = message.chat.id
+    user_id = message.from_user.id
+    now = time.time()
 
     if not await is_chatbot_enabled(chat_id):
         return
 
+    # Cooldown check
+    if now - user_cooldown[user_id] < 2:  # 2 sec cooldown
+        return await message.reply("Thoda wait babu! 😊")
+    user_cooldown[user_id] = now
+
     await app.send_chat_action(chat_id, ChatAction.TYPING)
-    reply = chatbot_api.ask_question(message.text)
-    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @betabot_support.")
+    
+    # AI se reply lekar bhejna
+    reply = await get_ai_response(message.text)
+    await message.reply_text(reply)
 
-# modules/chatbot.py me chatbot function
-async def chatbot(client, message):
-    try:
-        # ✅ FIX 1: AWAIT ADD KARO
-        reply = await chatbot_api.ask_question(message.text or "")
-        
-        # ✅ FIX 2: EMPTY CHECK
-        if not reply or len(reply.strip()) == 0:
-            reply = "Hii babu! Kya baat karni hai? 💕"
-        
-        # ✅ FIX 3: Clean text
-        reply = reply.strip().encode('utf-8', errors='ignore').decode()
-        
-        # ✅ FIX 4: Safe length
-        if len(reply) > 4000:
-            reply = reply[:4000] + "..."
-        
-        # ✅ SAFE SEND
-        await message.reply_text(reply)
-        
-    except Exception as e:
-        print(f"Chatbot Error: {e}")
-        await message.reply_text("❖ Chatbot me issue hai babu! Support ko bolo 😔")
-        
-# PRIVATE CHATBOT HANDLER
+# --- PRIVATE CHATBOT HANDLER ---
 @app.on_message(filters.private & filters.text & ~filters.bot & ~filters.regex(r"^[/!]"))
-async def chatbot_pm(_, message: Message):
-    await app.send_chat_action(message.chat.id, ChatAction.TYPING)
-    reply = chatbot_api.ask_question(message.text)
-    await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ betabot_support.")
+async def private_chatbot(_, message: Message):
+    user_id = message.from_user.id
+    now = time.time()
 
-# /chatbot COMMAND WITH BUTTONS
+    # Cooldown check for PM
+    if now - user_cooldown[user_id] < 2:
+        return await message.reply("Thoda wait babu! 😊")
+    user_cooldown[user_id] = now
+
+    await app.send_chat_action(message.chat.id, ChatAction.TYPING)
+    
+    # AI se reply lekar bhejna
+    reply = await get_ai_response(message.text)
+    await message.reply_text(reply)
+
+# --- /chatbot COMMAND WITH BUTTONS ---
 @app.on_message(filters.command("chatbot") & filters.group & ~filters.bot)
 @is_admins
 async def chatbot_toggle(_, message: Message):
@@ -109,7 +116,7 @@ async def chatbot_toggle(_, message: Message):
         reply_markup=keyboard
     )
 
-# CALLBACK BUTTON HANDLER
+# --- CALLBACK BUTTON HANDLER ---
 @app.on_callback_query(filters.regex("chatbot_"))
 @is_admins
 async def chatbot_button_toggle(_, query):
@@ -135,24 +142,3 @@ async def chatbot_button_toggle(_, query):
             f"❖ ᴄʜᴀᴛʙᴏᴛ ʜᴀꜱ ʙᴇᴇɴ **ᴅɪꜱᴀʙʟᴇᴅ** ʙʏ {user.mention}."
         )
         await query.answer("ᴄʜᴀᴛʙᴏᴛ ᴅɪꜱᴀʙʟᴇᴅ !!")
-
-# Before sending message
-async def chat_handler(client, message):
-    user_msg = message.text or message.caption or ""
-    
-    if not user_msg:
-        return  # Skip empty messages
-    
-    # Get AI response
-    ai_reply = await chatbot_api.ask_question(user_msg)
-    
-    # ✅ FINAL SAFETY CHECK
-    if not ai_reply or len(ai_reply.strip()) < 2:
-        ai_reply = "Hii babu! Kya baat karna chahte ho? 💕"
-    
-    # Send with error handling
-    try:
-        await message.reply_text(ai_reply)
-    except Exception as e:
-        print(f"Send Error: {e}")
-        await message.reply_text("Message send nahi hua! Try again 💖")
