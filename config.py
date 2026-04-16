@@ -4,6 +4,10 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+# ... existing code ...
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "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"
+
 API_ID = int(getenv("API_ID", None))
 API_HASH = getenv("API_HASH", None)
 BOT_TOKEN = getenv("BOT_TOKEN", None)
