@@ -56,6 +56,30 @@ async def chatbot(_, message: Message):
     reply = chatbot_api.ask_question(message.text)
     await message.reply_text(reply or "❖ ᴄʜᴀᴛʙᴏᴛ ᴇʀʀᴏʀ. ᴄᴏɴᴛᴀᴄᴛ @betabot_support.")
 
+# modules/chatbot.py me chatbot function
+async def chatbot(client, message):
+    try:
+        # ✅ FIX 1: AWAIT ADD KARO
+        reply = await chatbot_api.ask_question(message.text or "")
+        
+        # ✅ FIX 2: EMPTY CHECK
+        if not reply or len(reply.strip()) == 0:
+            reply = "Hii babu! Kya baat karni hai? 💕"
+        
+        # ✅ FIX 3: Clean text
+        reply = reply.strip().encode('utf-8', errors='ignore').decode()
+        
+        # ✅ FIX 4: Safe length
+        if len(reply) > 4000:
+            reply = reply[:4000] + "..."
+        
+        # ✅ SAFE SEND
+        await message.reply_text(reply)
+        
+    except Exception as e:
+        print(f"Chatbot Error: {e}")
+        await message.reply_text("❖ Chatbot me issue hai babu! Support ko bolo 😔")
+        
 # PRIVATE CHATBOT HANDLER
 @app.on_message(filters.private & filters.text & ~filters.bot & ~filters.regex(r"^[/!]"))
 async def chatbot_pm(_, message: Message):
