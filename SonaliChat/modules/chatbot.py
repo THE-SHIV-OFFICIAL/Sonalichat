@@ -1,3 +1,17 @@
+from collections import defaultdict
+import time
+
+user_cooldown = defaultdict(float)
+
+async def chat_handler(client, message):
+    user_id = message.from_user.id
+    now = time.time()
+    
+    if now - user_cooldown[user_id] < 2:  # 2 sec cooldown
+        return await message.reply("Thoda wait babu! 😊")
+    
+    user_cooldown[user_id] = now
+    # ... rest code
 from SonaliChat.database.sonali import chatbot_api
 from pyrogram import filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatMemberUpdated
