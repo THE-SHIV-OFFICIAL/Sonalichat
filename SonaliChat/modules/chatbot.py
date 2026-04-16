@@ -97,3 +97,24 @@ async def chatbot_button_toggle(_, query):
             f"❖ ᴄʜᴀᴛʙᴏᴛ ʜᴀꜱ ʙᴇᴇɴ **ᴅɪꜱᴀʙʟᴇᴅ** ʙʏ {user.mention}."
         )
         await query.answer("ᴄʜᴀᴛʙᴏᴛ ᴅɪꜱᴀʙʟᴇᴅ !!")
+
+# Before sending message
+async def chat_handler(client, message):
+    user_msg = message.text or message.caption or ""
+    
+    if not user_msg:
+        return  # Skip empty messages
+    
+    # Get AI response
+    ai_reply = await chatbot_api.ask_question(user_msg)
+    
+    # ✅ FINAL SAFETY CHECK
+    if not ai_reply or len(ai_reply.strip()) < 2:
+        ai_reply = "Hii babu! Kya baat karna chahte ho? 💕"
+    
+    # Send with error handling
+    try:
+        await message.reply_text(ai_reply)
+    except Exception as e:
+        print(f"Send Error: {e}")
+        await message.reply_text("Message send nahi hua! Try again 💖")
