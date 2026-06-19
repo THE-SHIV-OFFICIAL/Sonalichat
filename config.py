@@ -9,21 +9,21 @@ load_dotenv()
 # --- YEH VARIABLES MISSING THE ---
 API_ID = int(getenv("API_ID", "")) # Apna API_ID yahan daalo
 API_HASH = getenv("API_HASH", "") # Apna API_HASH yahan daalo
+BOT_TOKEN = os.getenv("BOT_TOKEN")  # Iska hona zaroori hai!
 # ---------------------------------
 
 # Ollama needs no API key!
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/sonali")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://host.docker.internal:11434")
 
-OWNER_ID = int(getenv("OWNER_ID", None))
 MONGO_URL = getenv("MONGO_URL", None)
 AUTH_CHANNEL = (getenv("AUTH_CHANNEL", "-1003794153476"))
 FSUB = os.getenv("FSUB", "False").lower() == "true"  # True/False
 OWNER_ID = int(getenv("OWNER_ID", None))
 OWNER = 8418584090
-LOGGER_GROUP_ID = -1003812209413
-BOT_NAME = os.environ.get("BOT_NAME","RED WINE")
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "red_wine_robot")
+LOGGER_GROUP_ID = -1003255930328
+BOT_NAME = os.environ.get("BOT_NAME","˹ 𝐀ɴᴜ 𝐗 𝐂ʜᴀᴛ ❤️‍🩹 ˼")
+BOT_USERNAME = os.environ.get("BOT_USERNAME", "ANU_X_ROBOT")
 SUPPORT_GROUP = os.environ.get("SUPPORT_GROUP", "betabot_support")
 UPDATES_CHANNEL = os.environ.get("UPDATES_CHANNEL", "betabot_hub")
 
