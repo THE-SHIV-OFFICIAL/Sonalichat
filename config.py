@@ -6,6 +6,11 @@ import os
 
 load_dotenv()
 
+# --- YEH VARIABLES MISSING THE ---
+API_ID = int(getenv("API_ID", "")) # Apna API_ID yahan daalo
+API_HASH = getenv("API_HASH", "") # Apna API_HASH yahan daalo
+# ---------------------------------
+
 # Ollama needs no API key!
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/sonali")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://host.docker.internal:11434")
