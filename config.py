@@ -17,7 +17,7 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/sonali")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://host.docker.internal:11434")
 
 MONGO_URL = getenv("MONGO_URL", None)
-AUTH_CHANNEL = (getenv("AUTH_CHANNEL", "-1003794153476"))
+AUTH_CHANNEL = (getenv("AUTH_CHANNEL", "-1003255930328"))
 FSUB = os.getenv("FSUB", "False").lower() == "true"  # True/False
 OWNER_ID = int(getenv("OWNER_ID", None))
 OWNER = 8418584090
